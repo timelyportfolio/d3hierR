@@ -100,7 +100,6 @@ HTMLWidgets.widget({
         // add Shiny
         if(typeof(Shiny) !== 'undefined' && Shiny.onInputChange) {
           var sendShiny = function() {
-            debugger;
             var source = d3.select(this);
             Shiny.onInputChange(
               el.id + '_' + d3.event.type,
