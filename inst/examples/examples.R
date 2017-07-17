@@ -13,11 +13,28 @@ rhd_nest <- d3_nest(
   value_cols = c("x", "spread")
 )
 
+# defaults
+tree(rhd_nest, sizeField="x")
+
+# clip text
+tree(rhd_nest, sizeField="x", clipText=TRUE)
+
+# add paddingOuter
+tree(rhd_nest, sizeField="x", paddingOuter=20, clipText=TRUE)
+
+tree(
+  rhd_nest,
+  sizeField = "x",
+  paddingOuter = 10,
+  styleText = list("font-size" = "70%")
+)
+
 tr <- tree(
   rhd_nest,
   sizeField = "x",
   valueField = "spread",
-  paddingOuter = 10
+  paddingOuter = 20,
+  clipText = TRUE
 )
 
 # use tasks to color by spread
@@ -64,5 +81,6 @@ tree(
   rhd_nest,
   sizeField = "x",
   paddingOuter = 20,
-  tile = htmlwidgets::JS('d3.treemapBinary')
+  tile = htmlwidgets::JS('d3.treemapBinary'),
+  clipText = TRUE
 )

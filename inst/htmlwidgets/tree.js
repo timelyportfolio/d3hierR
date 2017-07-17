@@ -101,6 +101,7 @@ HTMLWidgets.widget({
           .text(function(d) {
             return d.data[x.labelField];
           })
+          .attr('dx', '0.25em')
           .attr('dy', '1em')
           .style('fill', 'black')
           .style('stroke', 'none');
@@ -112,7 +113,43 @@ HTMLWidgets.widget({
             } catch(e) {
               console.log(e);
             }
-          })
+          });
+        }
+
+        if(x.styleRect) {
+          Object.keys(x.styleRect).forEach(function(ky) {
+            try {
+              cells.selectAll('rect').style(ky, x.styleRect[ky]);
+            } catch(e) {
+              console.log(e);
+            }
+          });
+        }
+
+        if(x.styleText) {
+          Object.keys(x.styleText).forEach(function(ky) {
+            try {
+              cells.selectAll('text').style(ky, x.styleText[ky]);
+            } catch(e) {
+              console.log(e);
+            }
+          });
+        }
+
+        // attempt to delete text that does not fit in cell
+        if(x.clipText) {
+          cells.each(function(d) {
+            var cell = this;
+            var text = d3.select(this).select('text');
+            var width = cell.getBoundingClientRect().width;
+            var height = cell.getBoundingClientRect().height;
+            if(
+              text.node().getComputedTextLength() > d.x1 - d.x0 ||
+              text.node().getBoundingClientRect().height > d.y1 - d.y0
+            ) {
+              text.text('');
+            }
+          });
         }
 
         // set up a container for tasks to perform after completion

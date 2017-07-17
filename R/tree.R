@@ -12,6 +12,9 @@ tree <- function(
   valueField = NULL,
   labelField = "name",
   style = list("fill" = "none", stroke = "black"),
+  styleRect = NULL,
+  styleText = NULL,
+  clipText = FALSE,
   ...,
   width = '100%', height = NULL, elementId = NULL
 ) {
@@ -20,9 +23,12 @@ tree <- function(
   x = list(
     data = data,
     style = style,
+    styleRect = styleRect,
+    styleText = styleText,
     sizeField = sizeField,
     valueField = valueField,
     labelField = labelField,
+    clipText = clipText,
     options = list(
       ...
     )

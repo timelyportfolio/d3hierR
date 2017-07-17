@@ -4,8 +4,9 @@
 \alias{tree}
 \title{'d3 v4 Treemap htmlwidget'}
 \usage{
-tree(data = NULL, sizeField = "value", valueField = "value",
-  style = list(fill = "none", stroke = "black"), ..., width = "100\%",
+tree(data = NULL, sizeField = "value", valueField = NULL,
+  labelField = "name", style = list(fill = "none", stroke = "black"),
+  styleRect = styleRect, styleText = styleText, ..., width = "100\%",
   height = NULL, elementId = NULL)
 }
 \description{
