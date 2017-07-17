@@ -85,6 +85,9 @@ HTMLWidgets.widget({
           cell.select('text').datum(cell.datum());
         });
 
+
+        cells.style("pointer-events", "all");
+
         cells
           .transition()
           .attr('transform', function(d) {
@@ -94,6 +97,28 @@ HTMLWidgets.widget({
             .attr("width", function(d) { return d.x1 - d.x0; })
             .attr("height", function(d) { return d.y1 - d.y0; });
 
+        // add Shiny
+        if(typeof(Shiny) !== 'undefined' && Shiny.onInputChange) {
+          var sendShiny = function() {
+            debugger;
+            var source = d3.select(this);
+            Shiny.onInputChange(
+              el.id + '_' + d3.event.type,
+              {
+                'label': source.datum().data[x.labelField],
+                'path': root.path(source.datum()).map(
+                  function(d) {
+                    return d.data[x.labelField]
+                  }
+                )
+              }
+            )
+          }
+          cells.on('click', sendShiny);
+          cells.on('mouseover', sendShiny);
+          cells.on('mouseout', sendShiny);
+        }
+
         x.labelField = x.labelField ? x.labelField : 'name';
 
         cells
@@ -101,7 +126,7 @@ HTMLWidgets.widget({
           .text(function(d) {
             return d.data[x.labelField];
           })
-          .attr('dx', '0.25em')
+          .attr('dx', '2px')
           .attr('dy', '1em')
           .style('fill', 'black')
           .style('stroke', 'none');
@@ -144,7 +169,7 @@ HTMLWidgets.widget({
             var width = cell.getBoundingClientRect().width;
             var height = cell.getBoundingClientRect().height;
             if(
-              text.node().getComputedTextLength() > d.x1 - d.x0 ||
+              text.node().getComputedTextLength() + 1 > d.x1 - d.x0 ||
               text.node().getBoundingClientRect().height > d.y1 - d.y0
             ) {
               text.text('');
