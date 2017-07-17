@@ -1,15 +1,29 @@
-#' <Add Title>
+#' 'd3 v4 Treemap htmlwidget'
 #'
-#' <Add Description>
+#' Create a d3 v4 based treemap htmlwidget
+#'  as a foundation for other interactivity
 #'
 #' @import htmlwidgets
 #'
 #' @export
-tree <- function(message, width = NULL, height = NULL, elementId = NULL) {
+tree <- function(
+  data = NULL,
+  sizeField = "value",
+  valueField = "value",
+  style = list("fill" = "none", stroke = "black"),
+  ...,
+  width = '100%', height = NULL, elementId = NULL
+) {
 
   # forward options using x
   x = list(
-    message = message
+    data = data,
+    style = style,
+    sizeField = sizeField,
+    valueField = valueField,
+    options = list(
+      ...
+    )
   )
 
   # create widget
@@ -49,4 +63,15 @@ treeOutput <- function(outputId, width = '100%', height = '400px'){
 renderTree <- function(expr, env = parent.frame(), quoted = FALSE) {
   if (!quoted) { expr <- substitute(expr) } # force quoted
   htmlwidgets::shinyRenderWidget(expr, treeOutput, env, quoted = TRUE)
+}
+
+
+#' @keywords internal
+tree_html <- function(id, style, class, ...){
+  htmltools::attachDependencies(
+    htmltools::tagList(
+      htmltools::tags$div(id=id, style=style, class=class, ...)
+    ),
+    d3r::d3_dep_v4()
+  )
 }
