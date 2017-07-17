@@ -10,6 +10,7 @@ tree <- function(
   data = NULL,
   sizeField = "value",
   valueField = "value",
+  labelField = "name",
   style = list("fill" = "none", stroke = "black"),
   ...,
   width = '100%', height = NULL, elementId = NULL
@@ -21,6 +22,7 @@ tree <- function(
     style = style,
     sizeField = sizeField,
     valueField = valueField,
+    labelField = labelField,
     options = list(
       ...
     )

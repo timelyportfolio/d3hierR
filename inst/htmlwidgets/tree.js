@@ -70,6 +70,7 @@ HTMLWidgets.widget({
           });
 
         cells_enter.append('rect');
+        cells_enter.append('text');
 
         cells.exit().remove();
 
@@ -80,6 +81,7 @@ HTMLWidgets.widget({
         cells.each(function() {
           var cell = d3.select(this);
           cell.select('rect').datum(cell.datum());
+          cell.select('text').datum(cell.datum());
         });
 
         cells
@@ -89,10 +91,18 @@ HTMLWidgets.widget({
           })
           .selectAll("rect")
             .attr("width", function(d) { return d.x1 - d.x0; })
-            .attr("height", function(d) { return d.y1 - d.y0; })
-            //.style("fill", function(d) {
-            //  while (d.depth > 1) d = d.parent; return color(d.id);
-          //});
+            .attr("height", function(d) { return d.y1 - d.y0; });
+
+        x.labelField = x.labelField ? x.labelField : 'name';
+
+        cells
+          .selectAll('text')
+          .text(function(d) {
+            return d.data[x.labelField];
+          })
+          .attr('dy', '1em')
+          .style('fill', 'black')
+          .style('stroke', 'none');
 
         if(x.style) {
           Object.keys(x.style).forEach(function(ky) {
@@ -103,11 +113,27 @@ HTMLWidgets.widget({
             }
           })
         }
+
+        // set up a container for tasks to perform after completion
+        //  one example would be add callbacks for event handling
+        //  styling
+        if (typeof x.tasks !== "undefined") {
+          if ( (typeof x.tasks.length === "undefined") ||
+           (typeof x.tasks === "function" ) ) {
+             // handle a function not enclosed in array
+             // should be able to remove once using jsonlite
+             x.tasks = [x.tasks];
+          }
+          x.tasks.map(function(t){
+            // for each tasks call the task with el supplied as `this`
+            t.call({el:el,x:x,instance:instance});
+          });
+        }
       },
 
       resize: function(width, height) {
 
-        // TODO: code to re-render the widget with a new size
+        this.renderValue(instance.x);
 
       },
 
