@@ -44,8 +44,6 @@ tr$x$tasks = list(
   htmlwidgets::JS(
 "
 function() {
-
-debugger;
   var el = d3.select(this.el);
   var cells = el.selectAll('g.cell rect');
   var valueField = this.x.valueField;
