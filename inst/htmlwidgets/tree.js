@@ -11,6 +11,8 @@ HTMLWidgets.widget({
     return {
 
       renderValue: function(x) {
+        // add accessor for updating from JavaScript
+        instance.x = x;
 
         // calculate height and width to match
         //   size of the containing element
@@ -44,14 +46,18 @@ HTMLWidgets.widget({
         chart_g.exit().remove();
 
         chart_g_enter = chart_g.enter().append('svg')
-          .style('width', width)
-          .style('height', height)
           .append('g')
             .classed('chart', true);
 
         chart_g = chart_g.merge(
           chart_g_enter
         );
+
+        chart_g.each(function() {
+          d3.select(this.parentNode)
+            .style('width', width)
+            .style('height', height);
+        });
 
         var cells = chart_g.selectAll('g.cell')
           .data(root.descendants().slice(1));
@@ -71,17 +77,21 @@ HTMLWidgets.widget({
           cells_enter
         );
 
+        cells.each(function() {
+          var cell = d3.select(this);
+          cell.select('rect').datum(cell.datum());
+        });
+
         cells
           .transition()
           .attr('transform', function(d) {
             return 'translate(' + d.x0 + ',' + d.y0 + ')';
-          });
-
-        cells.selectAll("rect")
-          .attr("width", function(d) { return d.x1 - d.x0; })
-          .attr("height", function(d) { return d.y1 - d.y0; })
-          //.style("fill", function(d) {
-          //  while (d.depth > 1) d = d.parent; return color(d.id);
+          })
+          .selectAll("rect")
+            .attr("width", function(d) { return d.x1 - d.x0; })
+            .attr("height", function(d) { return d.y1 - d.y0; })
+            //.style("fill", function(d) {
+            //  while (d.depth > 1) d = d.parent; return color(d.id);
           //});
 
         if(x.style) {
