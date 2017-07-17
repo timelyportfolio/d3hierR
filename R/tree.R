@@ -9,7 +9,7 @@
 tree <- function(
   data = NULL,
   sizeField = "value",
-  valueField = "value",
+  valueField = NULL,
   labelField = "name",
   style = list("fill" = "none", stroke = "black"),
   ...,

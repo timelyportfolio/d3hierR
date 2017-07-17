@@ -37,6 +37,7 @@ HTMLWidgets.widget({
         var root = layout(
           d3.hierarchy(x.data)
             .sum(function(d) {return d[x.sizeField] || 0;})
+            .sort(function(a, b) {return b.value - a.value})
         );
 
         // create svg and attach data
