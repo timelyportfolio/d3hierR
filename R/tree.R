@@ -15,6 +15,9 @@ tree <- function(
   styleRect = NULL,
   styleText = NULL,
   clipText = FALSE,
+  margin = list(
+    left = 0, top = 0, right = 0, bottom = 0
+  ),
   ...,
   width = '100%', height = NULL, elementId = NULL
 ) {
@@ -29,6 +32,7 @@ tree <- function(
     valueField = valueField,
     labelField = labelField,
     clipText = clipText,
+    margin = margin,
     options = list(
       ...
     )

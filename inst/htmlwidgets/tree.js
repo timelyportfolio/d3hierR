@@ -19,9 +19,14 @@ HTMLWidgets.widget({
         var width = el.getBoundingClientRect().width;
         var height = el.getBoundingClientRect().height;
 
+        var margin = x.margin ? x.margin : {left:0, top:0, right:0, bottom:0};
+
         // set up treemap layout
         var layout = d3.treemap()
-          .size([width, height]);
+          .size([
+            width - margin.left - margin.right,
+            height - margin.top - margin.bottom
+          ]);
 
         if(x.options) {
           Object.keys(x.options).forEach(function(ky) {
@@ -48,7 +53,8 @@ HTMLWidgets.widget({
 
         chart_g_enter = chart_g.enter().append('svg')
           .append('g')
-            .classed('chart', true);
+            .classed('chart', true)
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         chart_g = chart_g.merge(
           chart_g_enter
