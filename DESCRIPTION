@@ -1,8 +1,8 @@
 Package: d3hierR
 Type: Package
 Title: 'Htmlwidgets' for 'd3.js' Hierarchies
-Version: 1.0.2
-Date: 2017-09-21
+Version: 1.0.3
+Date: 2019-02-03
 Authors@R: c(
       person(
         "Mike", "Bostock"
@@ -31,4 +31,4 @@ Suggests:
     jsonlite
 Enhances:
     treemap
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
