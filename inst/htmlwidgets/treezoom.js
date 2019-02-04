@@ -263,10 +263,10 @@ HTMLWidgets.widget({
       if(typeof(node) === "undefined" || current === node) {
         return;
       }
-      node = node.copy();
+      node = layout(node.copy());
 
       var cells = chart_g.selectAll('g.cell')
-        .data(current.children);
+        .data(findNode(current.data[instance.x.labelField], node).children);
 
       cells.each(function() {
         var cell = d3.select(this);
