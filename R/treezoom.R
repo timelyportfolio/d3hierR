@@ -84,6 +84,6 @@ treezoom_html <- function(id, style, class, ...){
     htmltools::tagList(
       htmltools::tags$div(id=id, style=style, class=class, ...)
     ),
-    d3r::d3_dep_v4()
+    d3r::d3_dep_v5()
   )
 }
