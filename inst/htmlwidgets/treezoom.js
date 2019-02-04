@@ -8,6 +8,38 @@ HTMLWidgets.widget({
 
     var instance = {};
 
+    function getPath(node) {
+      var labelField = instance.x.labelField;
+      var names = node.ancestors().map(function(d) {
+        return d.data[labelField];
+      });
+      return names.reverse();
+    }
+
+    function updateHeader(data) {
+      var header = d3.select(el).select('div.header');
+
+      header.selectAll('span').remove();
+      header.text('');
+
+      data.forEach(function(path, i) {
+        header.append('span')
+          .text(path)
+          .datum(path)
+          .classed('name', true)
+          .style('cursor', 'pointer')
+          .on('click', function(d) {
+            zoomOut(d);
+          });
+
+        if(i < data.length - 1) {
+          header.append('span')
+            .text(' / ')
+            .classed('separator', true);
+        }
+      });
+    }
+
     function drawCells(data) {
       var x = instance.x;
       var layout = instance.layout;
@@ -66,12 +98,12 @@ HTMLWidgets.widget({
               'label': source.datum().data[x.labelField],
               'path': root.path(source.datum()).map(
                 function(d) {
-                  return d.data[x.labelField]
+                  return d.data[x.labelField];
                 }
               )
             }
-          )
-        }
+          );
+        };
         cells.on('click', sendShiny);
         cells.on('mouseover', sendShiny);
         cells.on('mouseout', sendShiny);
@@ -140,7 +172,6 @@ HTMLWidgets.widget({
       }
 
       cells
-        .transition()
         .style('opacity', 1);
 
       // set up a container for tasks to perform after completion
@@ -159,6 +190,21 @@ HTMLWidgets.widget({
         });
       }
     }
+
+    function findNode(name, root) {
+      var x = instance.x;
+      var labelField = x.labelField;
+      var found = root.descendants().filter(function(node) {
+        return node.data[labelField] === name;
+      });
+
+      if(Array.isArray(found) && found.length > 0) {
+        found = found[0];
+      }
+
+      return found;
+    }
+
 
     function zoomIn(node) {
       var chart_g = instance.chart_g;
@@ -187,34 +233,21 @@ HTMLWidgets.widget({
         .duration(1200);
 
       transition.select('rect')
-          .attr('x', 0)
-          .attr('y', 0)
-          .attr("width", function(d) { return layout.size()[0]; })
-          .attr("height", function(d) { return layout.size()[1]; });
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr("width", function(d) { return layout.size()[0]; })
+        .attr("height", function(d) { return layout.size()[1]; });
 
       transition.select('text')
-          .attr('x', 0)
-          .attr('y', 0);
+        .attr('x', 0)
+        .attr('y', 0);
 
       transition.remove();
 
       transition.end().then(function() {
+        updateHeader(getPath(findNode(child.data[instance.x.labelField], instance.root)));
         drawCells(child);
       });
-    }
-
-    function findNode(name, root) {
-      var x = instance.x;
-      var labelField = x.labelField;
-      var found = root.descendants().filter(function(node) {
-        return node.data[labelField] === name;
-      });
-
-      if(Array.isArray(found) && found.length > 0) {
-        found = found[0];
-      }
-
-      return found;
     }
 
     function zoomOut(name) {
@@ -227,7 +260,7 @@ HTMLWidgets.widget({
         d3.select(el).select('.cell').datum().parent.data[instance.x.labelField],
         root
       );
-      if(typeof(node) === "undefined") {
+      if(typeof(node) === "undefined" || current === node) {
         return;
       }
       node = node.copy();
@@ -259,6 +292,7 @@ HTMLWidgets.widget({
         .remove();
 
       t2.end().then(function() {
+        updateHeader(getPath(findNode(node.data[instance.x.labelField], instance.root)));
         drawCells(node);
       });
     }
@@ -305,6 +339,16 @@ HTMLWidgets.widget({
         );
         instance.root = root;
 
+        // create div to contain path for zoom in and out navigation
+        var header = d3.select(el).selectAll('div.header')
+          .data(['']);
+
+        header = header.merge(header.enter().append('div'));
+
+        header.classed('header', true);
+
+        updateHeader([root.data[x.labelField]]);
+
         // create svg and attach data
         var chart_g = d3.select(el).selectAll('g.chart')
           .data([x.data]);
@@ -343,9 +387,13 @@ HTMLWidgets.widget({
 
       findNode: findNode,
 
+      getPath: getPath,
+
       zoomIn: zoomIn,
 
-      zoomOut: zoomOut
+      zoomOut: zoomOut,
+
+      updateHeader: updateHeader
 
     };
   }
