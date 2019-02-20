@@ -10,10 +10,13 @@ HTMLWidgets.widget({
 
     function getPath(node) {
       var labelField = instance.x.labelField;
-      var names = node.ancestors().map(function(d) {
-        return d.data[labelField];
+      var info = node.ancestors().map(function(d) {
+        return {
+          name: d.data[labelField],
+          id: d.data._tzuid
+        };
       });
-      return names.reverse();
+      return info.reverse();
     }
 
     function updateHeader(data) {
@@ -24,8 +27,8 @@ HTMLWidgets.widget({
 
       data.forEach(function(path, i) {
         header.append('span')
-          .text(path)
-          .datum(path)
+          .text(path.name)
+          .datum(path.id)
           .classed('name', true)
           .style('cursor', 'pointer')
           .on('click', function(d) {
@@ -191,11 +194,10 @@ HTMLWidgets.widget({
       }
     }
 
-    function findNode(name, root) {
+    function findNode(id, root) {
       var x = instance.x;
-      var labelField = x.labelField;
-      var found = root.descendants().filter(function(node) {
-        return node.data[labelField] === name;
+      var found = root.descendants().filter(function(searchnode) {
+        return searchnode.data._tzuid === id;
       });
 
       if(Array.isArray(found) && found.length > 0) {
@@ -245,19 +247,19 @@ HTMLWidgets.widget({
       transition.remove();
 
       transition.end().then(function() {
-        updateHeader(getPath(findNode(child.data[instance.x.labelField], instance.root)));
+        updateHeader(getPath(findNode(child.data._tzuid, instance.root)));
         drawCells(child);
       });
     }
 
-    function zoomOut(name) {
+    function zoomOut(id) {
       var chart_g = instance.chart_g;
       var layout = instance.layout;
       var root = instance.root;
 
-      var node = findNode(name, root);
+      var node = findNode(id, root);
       var current = findNode(
-        d3.select(el).select('.cell').datum().parent.data[instance.x.labelField],
+        d3.select(el).select('.cell').datum().parent.data._tzuid,
         root
       );
       if(typeof(node) === "undefined" || current === node) {
@@ -266,7 +268,7 @@ HTMLWidgets.widget({
       node = layout(node.copy());
 
       var cells = chart_g.selectAll('g.cell')
-        .data(findNode(current.data[instance.x.labelField], node).children);
+        .data(findNode(current.data._tzuid, node).children);
 
       cells.each(function() {
         var cell = d3.select(this);
@@ -292,7 +294,7 @@ HTMLWidgets.widget({
         .remove();
 
       t2.end().then(function() {
-        updateHeader(getPath(findNode(node.data[instance.x.labelField], instance.root)));
+        updateHeader(getPath(findNode(node.data._tzuid, instance.root)));
         drawCells(node);
       });
     }
@@ -336,6 +338,15 @@ HTMLWidgets.widget({
           d3.hierarchy(x.data)
             .sum(function(d) {return d[x.sizeField] || 0;})
             .sort(function(a, b) {return b.value - a.value})
+        );
+
+        // assign id sequentially to avoid conflicting name
+        //  and also avoid user having to assign/specify
+        var i = 0;
+        root.each(
+          function(d) {
+            d.data._tzuid = i++;
+          }
         );
         instance.root = root;
 
